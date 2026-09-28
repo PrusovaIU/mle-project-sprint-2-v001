@@ -1,0 +1,12 @@
+md5: bac737b0e1f8e788e87d61fc55aebeab
+frozen: true
+deps:
+- path: part2_dvc/cv_results/metrics.json
+  repo:
+    url: https://github.com/PrusovaIU/mle-project-sprint-1-v001
+    rev_lock: 4552bb18d1f26cf7dfd61a960a71a90d7ee5a6a3
+outs:
+- md5: f8831cb99f724d4c0091a1cd3979dc4d
+  size: 86
+  hash: md5
+  path: metrics.json

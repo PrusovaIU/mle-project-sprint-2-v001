@@ -1,0 +1,12 @@
+md5: 7730bb3d3c96ed6de6c14e45859e90de
+frozen: true
+deps:
+- path: part2_dvc/models/fitted_model.pkl
+  repo:
+    url: https://github.com/PrusovaIU/mle-project-sprint-1-v001
+    rev_lock: 4552bb18d1f26cf7dfd61a960a71a90d7ee5a6a3
+outs:
+- md5: bb3f53917ed46c28ab048ddf734b67d1
+  size: 1124570
+  hash: md5
+  path: fitted_model.pkl
