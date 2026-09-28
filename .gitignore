@@ -172,3 +172,4 @@ cython_debug/
 
 # Another cache
 cache/
+/params.yaml

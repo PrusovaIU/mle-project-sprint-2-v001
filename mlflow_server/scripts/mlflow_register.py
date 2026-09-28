@@ -1,84 +1,72 @@
+import json
+import pickle
+import pandas as pd
 import mlflow
 import mlflow.sklearn
-import pandas as pd
-import yaml
-import json
 from mlflow.models import infer_signature
+import yaml
+from dotenv import load_dotenv
+from os import getenv
 
-# 1. НАСТРОЙКИ ПОДКЛЮЧЕНИЯ
-# Укажите адрес вашего MLflow-сервера
-mlflow.set_tracking_uri("http://127.0.0.1:5000") 
-mlflow.set_experiment("Building_Price_Prediction")
 
-# 2. ЗАГРУЗКА ДАННЫХ И ПАРАМЕТРОВ
-# Читаем params.yaml для получения гиперпараметров
-with open("params.yaml", "r") as f:
+# Параметры .env:
+load_dotenv()
+EXPERIMENT_NAME = getenv('EXPERIMENT_NAME', 'buildings_flats_price_prediction')
+MODEL_NAME = getenv('MODEL_NAME', 'buildings_flats_price_model')
+MLFLOW_URI = getenv('MLFLOW_URI', 'http://localhost:5000')
+
+
+
+# Концигурация
+mlflow.set_tracking_uri(MLFLOW_URI)
+mlflow.set_experiment(EXPERIMENT_NAME)
+
+# Загрузка параметров:
+with open('params.yaml', 'r') as f:
     params = yaml.safe_load(f)
 
-# Читаем данные, которые DVC сгенерировал
-# Важно: используем те же пути, что указаны в dvc.yaml
-train_df = pd.read_csv("data/train.csv")
-val_df = pd.read_csv("data/val.csv") # Используем для метрик (если нужно) или для примера
-
-# Читаем модель, обученную DVC
-# Для загрузки используем pickle, так как модель сохранена как .pkl
-import pickle
-with open("models/fitted_model.pkl", "rb") as f:
+# Загрузка модели
+with open('models/fitted_model.pkl', 'rb') as f:
     model = pickle.load(f)
 
-# Читаем метрики, вычисленные DVC
-with open("cv_results/metrics.json", "r") as f:
+# Загрузка обучающих данных
+target_col = params['data']['target_col']
+train_df = pd.read_csv('data/train.csv')
+X_train = train_df.drop(columns=[target_col])
+input_example = X_train.iloc[[0]]
+predictions = model.predict(X_train.iloc[:5])
+signature = infer_signature(X_train.iloc[:5], predictions)
+
+# Загрузка метрик валидации
+with open('cv_results/metrics.json', 'r') as f:
     metrics = json.load(f)
 
-# 3. ПОДГОТОВКА СИГНАТУРЫ
-# Разделяем признаки и таргет
-# В dvc.yaml target_col: price
-target_col = params['data']['target_col'] # "price"
-X_train = train_df.drop(columns=[target_col])
-y_train = train_df[target_col]
+# Запуск MLflow и логирование
+with mlflow.start_run(run_name='buildings_flats_final_model') as run:
+    # Логируем параметры модели из DVC
+    model_params = params['model']
+    mlflow.log_param('model_depth', model_params['depth'])
+    mlflow.log_param('model_iterations', model_params['iterations'])
+    mlflow.log_param('model_learning_rate', model_params['iterations'])
+    mlflow.log_param('model_loss_function', model_params['iterations'])
+    mlflow.log_param('random_state', model_params['iterations'])
 
-# Генерируем прогнозы на тренировочных данных для сигнатуры
-predictions = model.predict(X_train)
+    # Логируем метрики валидации (по одной)
+    for key, value in metrics.items():
+        mlflow.log_metric(key, value)
 
-# Инферим сигнатуру: какие колонки на входе, какой тип на выходе
-signature = infer_signature(X_train, predictions)
+    # Логируем обучающие данные как artifact
+    mlflow.log_artifact('data/train.csv', artifact_path='training_data')
+    mlflow.log_artifact('cv_results/metrics.json', artifact_path='metrics')
 
-# Создаем пример входа (первые 5 строк)
-input_example = X_train.iloc[:5]
-
-# 4. ЗАПУСК РАНА И ЛОГИРОВАНИЕ
-with mlflow.start_run(run_name="DVC_Best_Model") as run:
-    
-    # -- Логирование Параметров --
-    # Логируем параметры из params.yaml, которые относятся к модели
-    mlflow.log_param("model_depth", params['model']['depth'])
-    mlflow.log_param("model_iterations", params['model']['iterations'])
-    mlflow.log_param("model_learning_rate", params['model']['learning_rate'])
-    mlflow.log_param("model_loss_function", params['model']['loss_function'])
-    
-    # -- Логирование Метрик --
-    # Логируем метрики из cv_results/metrics.json
-    for metric_name, metric_value in metrics.items():
-        mlflow.log_metric(metric_name, metric_value)
-    
-    # -- Логирование Артефактов (Файлов) --
-    # Требование: "взять обученную модель, обучающие данные и метрики тестовой выборки"
-    # Логируем сам файл модели
-    mlflow.log_artifact("models/fitted_model.pkl", artifact_path="model_file")
-    # Логируем файл обучающих данных (или их сэмпл, если он огромный)
-    mlflow.log_artifact("data/train.csv", artifact_path="data")
-    # Логируем файл метрик
-    mlflow.log_artifact("cv_results/metrics.json", artifact_path="metrics")
-    
-    # -- Логирование и Регистрация Модели --
-    # Регистрируем модель в Model Registry с сигнатурой
+    # Регистрируем модель: передаём signature и input_example
     mlflow.sklearn.log_model(
         sk_model=model,
-        name="building_price_model", # artifact_path
+        artifact_path='model',
         signature=signature,
         input_example=input_example,
-        registered_model_name="BuildingPricePredictor" # Имя в Model Registry
+        registered_model_name='buildings_flats_price_model',
     )
 
-    print(f"Run ID: {run.info.run_id}")
-    print("Модель успешно зарегистрирована в MLflow Model Registry.")
+    print(f'Run ID: {run.info.run_id}')
+    print(f'Зарегистрирована модель: {MODEL_NAME}')
