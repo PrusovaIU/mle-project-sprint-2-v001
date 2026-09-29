@@ -47,9 +47,9 @@ with mlflow.start_run(run_name='buildings_flats_final_model') as run:
     model_params = params['model']
     mlflow.log_param('model_depth', model_params['depth'])
     mlflow.log_param('model_iterations', model_params['iterations'])
-    mlflow.log_param('model_learning_rate', model_params['iterations'])
-    mlflow.log_param('model_loss_function', model_params['iterations'])
-    mlflow.log_param('random_state', model_params['iterations'])
+    mlflow.log_param('model_learning_rate', model_params['learning_rate'])
+    mlflow.log_param('model_loss_function', model_params['loss_function'])
+    mlflow.log_param('random_state', model_params['random_state'])
 
     # Логируем метрики валидации (по одной)
     for key, value in metrics.items():
