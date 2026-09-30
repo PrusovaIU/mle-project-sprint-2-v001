@@ -68,5 +68,15 @@ with mlflow.start_run(run_name='buildings_flats_final_model') as run:
         registered_model_name='buildings_flats_price_model',
     )
 
+    # логируем EDA:
+    mlflow.log_artifact(
+            local_path="model_improvement/EDA.ipynb",
+            artifact_path="eda",
+        )
+    mlflow.log_artifact(
+        local_path="model_improvement/EDA_conclusion.md",
+        artifact_path="eda",
+    )
+
     print(f'Run ID: {run.info.run_id}')
     print(f'Зарегистрирована модель: {MODEL_NAME}')
