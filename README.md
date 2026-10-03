@@ -218,3 +218,11 @@ http://localhost:5000/#/experiments/2/runs/623d2020643346999239cdd6a8ae15af
 | MAE | 1 863 224,51 руб | 2 106 081,78 руб | Ухудшение |
 | MAPE | 16,68% | 18,13% | Ухудшение |
 | R² | 0,73 | 0,63 | Ухудшение |
+
+### Артефакты:
+
+Артефакты: 
+* [`model_improvement/notebook.ipynb`](model_improvement/notebook.ipynb) - доработан для обучения второй версии модели;
+* [`mlflow_server/scripts/mlflow_register_v2.py`](mlflow_server/scripts/mlflow_register_v2.py) - скрипт для регистрации второй версии модели.
+
+![](docs/imgs/v2_log.png)
