@@ -70,7 +70,7 @@ with mlflow.start_run(run_name='buildings_flats_final_model') as run:
 
     # логируем EDA:
     mlflow.log_artifact(
-            local_path="model_improvement/EDA.ipynb",
+            local_path="model_improvement/notebook.ipynb",
             artifact_path="eda",
         )
     mlflow.log_artifact(
