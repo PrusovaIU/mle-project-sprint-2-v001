@@ -158,7 +158,7 @@ http://localhost:5000/#/experiments/2/runs/623d2020643346999239cdd6a8ae15af
 ### 2.2. Логирование артефактов в MLFlow
 
 Артефакты: 
-* [`model_improvement/EDA.ipynb`](model_improvement/EDA.ipynb) - Jupyter Notebook с проведенным EDA;
+* [`model_improvement/notebook.ipynb`](model_improvement/notebook.ipynb) - Jupyter Notebook с проведенным EDA;
 * [`model_improvement/EDA_conclusion.md`](model_improvement/EDA_conclusion.md) - Markdown-файл с выводами по проведенному EDA.
 
 Для логирования артефактов был доработан скрипт регистрации модели: [`mlflow_server/scripts/mlflow_register.py`](mlflow_server/scripts/mlflow_register.py).
