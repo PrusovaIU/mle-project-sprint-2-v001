@@ -1,0 +1,12 @@
+md5: bd3f3b13d68bc772bda7d99ed0642b18
+frozen: true
+deps:
+- path: part2_dvc/data/train.csv
+  repo:
+    url: https://github.com/PrusovaIU/mle-project-sprint-1-v001
+    rev_lock: 4552bb18d1f26cf7dfd61a960a71a90d7ee5a6a3
+outs:
+- md5: 7a2fa7affdeec410167a89bfb476d533
+  size: 11280865
+  hash: md5
+  path: train.csv
