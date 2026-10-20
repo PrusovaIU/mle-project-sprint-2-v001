@@ -388,5 +388,21 @@ Optuna за 30 trial'ов нашла конфигурацию с R^2 ≈ 0.747, 
 
 **Вывод**: выдвинуть V5 как основного кандидата на внедрение.
 
-### Логирование в MLFlow
+### 5.4. Логирование в MLFlow
 
+Были залогированы:
+
+1. процесс подбора гиперпараметров с помощью `optuna` 
+(final_autofeat_pipeline_model; Run ID: bb7431f564e94e6799acfa2628797f63);
+
+![v5_optuna_hpo.png](docs/imgs/v5_optuna_hpo.png)
+
+2. результаты побора гиперпараметров с помощью `Random Search`
+(v5_random_search_hpo; Run ID: c96c2f9baae3420fbba40fdb3d21a192)
+
+![v5_random_search_hpo.png](docs/imgs/v5_random_search_hpo.png)
+
+3. результат обучения финальной версии модели 
+(final_autofeat_pipeline_model; Run ID: 0ae5f076173b4391a4fe3fea6ac55dbc)
+
+![final_autofeat_pipeline_model.png](docs/imgs/final_autofeat_pipeline_model.png)
